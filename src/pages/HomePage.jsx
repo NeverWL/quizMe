@@ -1,10 +1,20 @@
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function HomePage() {
+    const navigate = useNavigate();
+
     return (
-        <>
-            <div> Home page </div>
-            <Link to="/SelectPage">Select Page</Link>
-        </>
-    )
+      <div className="container vh-100 d-flex flex-column justify-content-center align-items-center">
+        <h1 className="mb-4">Welcome to QuizMe</h1>
+        <button className="btn btn-primary" onClick={() => navigate("/SelectPage")}>Upload Study Materials</button>
+      </div>
+    );
+    // return (
+    //     <>
+    //         <div> Home page </div>
+    //         <Link to="/SelectPage">Select Page</Link>
+    //     </>
+    // )
 };
+

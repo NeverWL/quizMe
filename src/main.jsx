@@ -8,6 +8,7 @@ import SelectPage from './pages/SelectPage';
 import QuizPage from './pages/QuizPage';
 import ResultsPage from './pages/ResultsPage';
 import TestPage from './pages/TestPage';
+import OCRPage from './pages/OCRPage';
 import 'bootstrap/dist/css/bootstrap.css'
 
 const router = createBrowserRouter([
@@ -31,6 +32,10 @@ const router = createBrowserRouter([
   {
     path: '/TestPage',
     element: <TestPage />
+  }, 
+  {
+    path: '/OCRPage',
+    element: <OCRPage />
   }
 ]);
 

@@ -8,6 +8,7 @@ export default function HomePage() {
       <div className="container vh-100 d-flex flex-column justify-content-center align-items-center">
         <h1 className="mb-4">Welcome to QuizMe</h1>
         <button className="btn btn-primary" onClick={() => navigate("/SelectPage")}>Upload Study Materials</button>
+        <Link to="/TestPage">Test Page</Link>
       </div>
     );
     // return (

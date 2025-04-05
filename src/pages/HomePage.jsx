@@ -9,6 +9,7 @@ export default function HomePage() {
         <h1 className="mb-4">Welcome to QuizMe</h1>
         <button className="btn btn-primary" onClick={() => navigate("/SelectPage")}>Upload Study Materials</button>
         <Link to="/TestPage">Test Page</Link>
+        <Link to="/OCRPage">OCR Page</Link>
       </div>
     );
     // return (

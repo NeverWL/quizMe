@@ -90,13 +90,13 @@ export default function TestPage() {
         <nav>
             <a href="#" style={{ ...styles.navLink, ...styles.activeLink }}>Home</a>
             <Link to="/QuizPage" style={styles.navLink}>Create a Quiz</Link>
-            <div style={styles.navLink}>
+            <span style={styles.navLink}>
                 {user ? (
-                    <p>Welcome, {user.displayName}</p>
+                    <span>Welcome, {user.displayName}</span>
                 ) : (
                     <GoogleLoginButton onLogin={setUser} />
                 )}
-            </div>
+            </span>
         </nav>
       </header>
 

@@ -4,8 +4,12 @@ import { useState, useEffect } from "react";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import wordLess from '../assets/upGradeWordless.png';
 import upGradeLogo from '../assets/upgradeWithText.png';
+import GoogleLoginButton from "../components/GoogleLoginButton";
+import { auth } from "../../firebase";
+import { onAuthStateChanged } from "firebase/auth";
 
 export default function HomePage() {
+  const [user, setUser] = useState(null);
   const [typedText, setTypedText] = useState("");
   const fullText = "Weelcome to the new way to learn.";
 
@@ -22,6 +26,14 @@ export default function HomePage() {
   
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+    setUser(firebaseUser);
+    });
+    return () => unsubscribe();
+  }, []);
+
   const styles = {
     body: {
         background: "linear-gradient(to bottom, #503D3F, #2a1f21)",
@@ -78,7 +90,13 @@ export default function HomePage() {
         <nav>
           <a href="#" style={{ ...styles.navLink, ...styles.activeLink }}>Home</a>
           <Link to="/QuizPage" style={styles.navLink}>Create a Quiz</Link>
-          <Link to="/TestPage" style={styles.navLink}>Test</Link>
+          <span style={styles.navLink}>
+              {user ? (
+                  <span>Welcome, {user.displayName}</span>
+              ) : (
+                  <GoogleLoginButton onLogin={setUser} />
+              )}
+          </span>
         </nav>
       </header>
 

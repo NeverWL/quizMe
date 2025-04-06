@@ -31,6 +31,21 @@ export default function ResultsPage() {
       activeLink: {
         borderBottom: "2px solid #ADDC92",
       },
+      button: {
+        backgroundColor: "#ADDC92",
+        textDecoration: "none",
+        color: "#FFFFFF",
+        borderRadius: "20px",
+        border: "nonex",
+        fontWeight: "bold",
+        padding: "0.75rem 1.5rem",
+        margin: "0.5rem",
+        cursor: "pointer",
+        transition: "all 0.3s ease",
+        "&:hover": {
+          backgroundColor: "#3D2E30",
+        },
+      },
     };
   
     return (
@@ -48,7 +63,7 @@ export default function ResultsPage() {
 
         <div className = "container vh-100 d-flex flex-column justify-content-center align-items-center">
         <h1 className="mb-3" style = {styles.header}>Your Score: {state.score} / {state.total}</h1>
-        <button className="btn btn-secondary" onClick={() => navigate("/quizMe")}>Back to Home</button>
+        <button onClick={() => navigate("/quizMe")} style={styles.button}>Back to Home</button>
         </div>
       </div>
     );

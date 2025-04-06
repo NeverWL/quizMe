@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import Tesseract from "tesseract.js";
+import wordLess from '../assets/upGradeWordless.png';
 
 export default function QuizPage() {
   // Quiz state
@@ -10,6 +11,8 @@ export default function QuizPage() {
   const [score, setScore] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [selectedAnswer, setSelectedAnswer] = useState(null);
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const navigate = useNavigate();
 
   // OCR state
@@ -20,6 +23,184 @@ export default function QuizPage() {
   const textareaRef = useRef(null);
   
   const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+
+  const styles = {
+    body: {
+      backgroundColor: "#503D3F",
+      color: "#FDE8E9",
+      minHeight: "100vh",
+      display: "flex",
+      flexDirection: "column",
+      padding: "0 1rem",
+    },
+    header: {
+      padding: "1rem",
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+    },
+    navLink: {
+      margin: "0 1rem",
+      color: "#FDE8E9",
+      fontWeight: "bold",
+      textDecoration: "none",
+    },
+    activeLink: {
+      borderBottom: "2px solid #ADDC92",
+    },
+    main: {
+      flexGrow: 1,
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      alignItems: "center",
+      padding: "2rem",
+    },
+    card: {
+      backgroundColor: "#FDE8E9",
+      color: "#503D3F",
+      borderRadius: "15px",
+      padding: "2rem",
+      width: "100%",
+      maxWidth: "800px",
+      boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
+    },
+    title: {
+      color: "#503D3F",
+      marginBottom: "1.5rem",
+      textAlign: "center",
+    },
+    button: {
+      backgroundColor: "#503D3F",
+      color: "#FDE8E9",
+      borderRadius: "20px",
+      border: "none",
+      fontWeight: "bold",
+      padding: "0.75rem 1.5rem",
+      margin: "0.5rem",
+      cursor: "pointer",
+      transition: "all 0.3s ease",
+      "&:hover": {
+        backgroundColor: "#3D2E30",
+      },
+    },
+    secondaryButton: {
+      backgroundColor: "#ADDC92",
+      color: "#503D3F",
+    },
+    input: {
+      backgroundColor: "#FFFFFF",
+      color: "#503D3F",
+      border: "1px solid #503D3F",
+      borderRadius: "10px",
+      padding: "0.75rem",
+      width: "100%",
+      marginBottom: "1rem",
+    },
+    textarea: {
+      backgroundColor: "#FFFFFF",
+      color: "#503D3F",
+      border: "1px solid #503D3F",
+      borderRadius: "10px",
+      padding: "0.75rem",
+      width: "100%",
+      minHeight: "200px",
+      marginBottom: "1rem",
+      resize: "vertical",
+    },
+    imagePreview: {
+      maxWidth: "100%",
+      maxHeight: "200px",
+      borderRadius: "10px",
+      margin: "1rem 0",
+      border: "2px dashed #503D3F",
+    },
+    questionCard: {
+      backgroundColor: "#FDE8E9",
+      color: "#503D3F",
+      borderRadius: "15px",
+      padding: "2rem",
+      width: "100%",
+      maxWidth: "600px",
+      boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
+      textAlign: "center",
+    },
+    choiceButton: {
+      backgroundColor: "#FFFFFF",
+      color: "#503D3F",
+      borderRadius: "10px",
+      border: "2px solid #503D3F",
+      padding: "0.75rem",
+      margin: "0.5rem 0",
+      width: "100%",
+      cursor: "pointer",
+      transition: "all 0.3s ease",
+      "&:hover": {
+        backgroundColor: "#ADDC92",
+        borderColor: "#ADDC92",
+      },
+    },
+    loading: {
+      color: "#FDE8E9",
+      textAlign: "center",
+      fontSize: "1.2rem",
+    },
+    error: {
+      color: "#FF6B6B",
+      textAlign: "center",
+      margin: "1rem 0",
+    },
+    footer: {
+      color: "#FFFFFF",
+      textAlign: "center",
+      padding: "1rem",
+    },
+    // New styles for quiz feedback
+    correctAnswer: {
+      backgroundColor: "#ADDC92",
+      borderColor: "#ADDC92",
+      color: "#503D3F",
+    },
+    incorrectAnswer: {
+      backgroundColor: "#FF6B6B",
+      borderColor: "#FF6B6B",
+      color: "#FDE8E9",
+    },
+    correctIndicator: {
+      backgroundColor: "#ADDC92",
+      color: "#503D3F",
+      padding: "0.5rem 1rem",
+      borderRadius: "20px",
+      margin: "1rem 0",
+      fontWeight: "bold",
+    },
+    incorrectIndicator: {
+      backgroundColor: "#FF6B6B",
+      color: "#FDE8E9",
+      padding: "0.5rem 1rem",
+      borderRadius: "20px",
+      margin: "1rem 0",
+      fontWeight: "bold",
+    },
+    feedback: {
+      backgroundColor: "#FDE8E9",
+      color: "#503D3F",
+      padding: "1rem",
+      borderRadius: "10px",
+      borderLeft: "4px solid #503D3F",
+      margin: "1rem 0",
+    },
+    buttonGroup: {
+      display: "flex",
+      marginTop: "2rem",
+      marginLeft: "65%"
+    },
+    selectedAnswer: {
+      backgroundColor: "#503D3F",
+      color: "#FDE8E9",
+      borderColor: "#503D3F",
+    }
+  };
 
   // Handle image upload
   const handleImageChange = (event) => {
@@ -51,7 +232,6 @@ export default function QuizPage() {
   const handleQuestionCountChange = (e) => {
     const value = e.target.value;
     
-    // Allow empty value (so user can delete and type new number)
     if (value === '') {
       setQuestionCount('');
       return;
@@ -59,7 +239,6 @@ export default function QuizPage() {
     
     const numValue = parseInt(value);
     if (!isNaN(numValue)) {
-      // Only set if within bounds
       if (numValue >= 1 && numValue <= 20) {
         setQuestionCount(numValue);
       }
@@ -73,7 +252,6 @@ export default function QuizPage() {
       return;
     }
 
-    // Validate question count
     if (!questionCount || questionCount < 1 || questionCount > 20) {
       setError("Please enter a valid number of questions (1-20)");
       return;
@@ -94,12 +272,14 @@ export default function QuizPage() {
       - A clear question related to the study material
       - 4 plausible answer choices (a, b, c, d)
       - The correct answer
+      - A brief explanation of why the answer is correct
       
       Format each question like this:
       {
         "question": "What is the capital of France?",
         "choices": ["Paris", "Berlin", "Rome", "Madrid"],
-        "answer": "Paris"
+        "answer": "Paris",
+        "explanation": "Paris has been the capital of France since the 5th century."
       }
       
       Return only a valid JSON array of these question objects.
@@ -118,6 +298,8 @@ export default function QuizPage() {
       setQuestions(generatedQuestions);
       setCurrent(0);
       setScore(0);
+      setSelectedAnswer(null);
+      setIsSubmitted(false);
     } catch (err) {
       console.error("API Error:", err);
       setError("Failed to generate quiz. Please try again.");
@@ -126,50 +308,96 @@ export default function QuizPage() {
     }
   };
 
-  // Handle quiz answer selection
-  const handleAnswer = (choice) => {
-    if (choice === questions[current].answer) {
+  // Modified answer selection handler
+  const handleAnswerSelect = (choice) => {
+    if (!isSubmitted) {
+      setSelectedAnswer(choice);
+    }
+  };
+
+  // New submit answer handler
+  const handleSubmit = () => {
+    if (selectedAnswer === null) return;
+    
+    setIsSubmitted(true);
+    
+    if (selectedAnswer === questions[current].answer) {
       setScore(score + 1);
     }
+  };
+
+  // New next question handler
+  const handleNext = () => {
+    setSelectedAnswer(null);
+    setIsSubmitted(false);
     
     if (current + 1 < questions.length) {
       setCurrent(current + 1);
     } else {
       navigate("/ResultsPage", { 
         state: { 
-          score: choice === questions[current].answer ? score + 1 : score, 
+          score: score, 
           total: questions.length 
         } 
       });
     }
   };
 
-  if (isLoading) return <div className="p-4">Generating quiz questions...</div>;
-  if (error) return <div className="p-4 text-danger">Error: {error}</div>;
+  // Reset quiz handler
+  const handleNewQuiz = () => {
+    setQuestions([]);
+    setSelectedAnswer(null);
+    setIsSubmitted(false);
+  };
+
+  if (isLoading) return <div style={styles.loading}>Generating quiz questions...</div>;
+  if (error) return <div style={styles.error}>Error: {error}</div>;
 
   return (
-    <div className="container py-4">
-      {questions.length === 0 ? (
-        // Study guide input section
-        <div className="card mb-4">
-          <div className="card-body">
-            <h5 className="card-title">Create Study Guide</h5>
+    <div style={styles.body}>
+      <header style={styles.header}>
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <img
+            src={wordLess}
+            alt="UpGrade Logo"
+            style={{
+              width: "40px",
+              height: "40px",
+              marginRight: "10px"
+            }}
+          />
+          <h3 style={{ margin: 0 }}>Up-Grade</h3>
+        </div>
+        <nav>
+          <Link to="/" style={styles.navLink}>Home</Link>
+          <Link to="/QuizPage" style={{ ...styles.navLink, ...styles.activeLink }}>Create a Quiz</Link>
+        </nav>
+      </header>
+
+      <main style={styles.main}>
+        {questions.length === 0 ? (
+          // Study guide input section
+          <div style={styles.card}>
+            <h2 style={styles.title}>Create Your Study Guide</h2>
             
-            {/* Option 1: Upload image for OCR */}
-            <div className="mb-4">
-              <h6>Upload Study Material Image</h6>
+            <div style={{ marginBottom: "2rem" }}>
+              <h3 style={{ color: "#503D3F", marginBottom: "1rem" }}>Upload Study Material Image</h3>
               <input 
                 type="file" 
                 onChange={handleImageChange} 
-                className="form-control mb-2"
+                style={{ display: "none" }}
+                id="imageUpload"
                 accept="image/*"
               />
+              <label htmlFor="imageUpload" style={styles.button}>
+                Choose Image
+              </label>
               {imagePath && (
                 <>
-                  <img src={imagePath} className="img-fluid mb-2" alt="Uploaded study material" style={{maxHeight: '200px'}}/>
+                  <img src={imagePath} style={styles.imagePreview} alt="Uploaded study material"/>
                   <button 
                     onClick={handleExtractText} 
-                    className="btn btn-primary"
+                    style={styles.button}
                     disabled={isExtracting}
                   >
                     {isExtracting ? "Extracting..." : "Extract Text"}
@@ -178,77 +406,127 @@ export default function QuizPage() {
               )}
             </div>
             
-            {/* Option 2: Direct text input */}
-            <div className="mb-3">
-              <h6>Or Enter Study Guide Text</h6>
+            <div style={{ marginBottom: "2rem" }}>
+              <h3 style={{ color: "#503D3F", marginBottom: "1rem" }}>Or Enter Study Guide Text</h3>
               <textarea
                 ref={textareaRef}
-                className="form-control"
-                rows="10"
+                style={styles.textarea}
                 value={studyGuide}
                 onChange={(e) => setStudyGuide(e.target.value)}
-                placeholder="Paste your study guide here or extract from image above"
+                placeholder="Paste your study guide here or extract from image above..."
               />
             </div>
             
-            {/* Number of questions input */}
-            <div className="mb-3">
-              <label htmlFor="questionCountInput" className="form-label">
+            <div style={{ marginBottom: "2rem" }}>
+              <label style={{ display: "block", marginBottom: "0.5rem", color: "#503D3F" }}>
                 Number of Questions (1-20):
               </label>
               <input
                 type="number"
-                id="questionCountInput"
-                className="form-control mb-3"
+                style={{ ...styles.input, width: "80px", textAlign: "center" }}
                 min="1"
                 max="20"
                 value={questionCount || ''}
                 onChange={handleQuestionCountChange}
-                style={{width: '80px'}}
               />
             </div>
             
             <button 
               onClick={generateQuiz} 
-              className="btn btn-success"
+              style={{ ...styles.button, ...styles.secondaryButton }}
               disabled={!studyGuide.trim() || isExtracting || !questionCount}
             >
               Generate {questionCount} Question{questionCount !== 1 ? 's' : ''}
             </button>
           </div>
-        </div>
-      ) : (
-        // Quiz interface
-        <div className="card">
-          <div className="card-body">
-            <h5 className="card-title">Question {current + 1} of {questions.length}</h5>
-            <h6 className="card-subtitle mb-2">{questions[current].question}</h6>
-            <div className="d-flex flex-column gap-2 mt-3">
-              {questions[current].choices.map((choice) => (
-                <button 
-                  key={choice} 
-                  className="btn btn-outline-primary" 
-                  onClick={() => handleAnswer(choice)}
-                >
-                  {choice}
-                </button>
-              ))}
+        ) : (
+          // Updated Quiz interface
+          <div style={styles.questionCard}>
+            <h2 style={{ color: "#503D3F", marginBottom: "1rem" }}>
+              Question {current + 1} of {questions.length}
+              {isSubmitted && (
+                <span style={{ 
+                  float: "right",
+                  color: selectedAnswer === questions[current].answer ? "#ADDC92" : "#FF6B6B"
+                }}>
+                  {selectedAnswer === questions[current].answer ? "✓ Correct" : "✗ Incorrect"}
+                </span>
+              )}
+            </h2>
+            
+            <h3 style={{ color: "#503D3F", marginBottom: "2rem" }}>{questions[current].question}</h3>
+            
+            <div style={{ width: "100%" }}>
+              {questions[current].choices.map((choice) => {
+                let buttonStyle = styles.choiceButton;
+                
+                if (isSubmitted) {
+                  if (choice === questions[current].answer) {
+                    buttonStyle = { ...buttonStyle, ...styles.correctAnswer };
+                  } else if (choice === selectedAnswer && choice !== questions[current].answer) {
+                    buttonStyle = { ...buttonStyle, ...styles.incorrectAnswer };
+                  }
+                } else if (choice === selectedAnswer) {
+                  buttonStyle = { ...buttonStyle, ...styles.selectedAnswer };
+                }
+                
+                return (
+                  <button 
+                    key={choice} 
+                    style={buttonStyle}
+                    onClick={() => handleAnswerSelect(choice)}
+                    disabled={isSubmitted}
+                  >
+                    {choice}
+                  </button>
+                );
+              })}
             </div>
-            <div className="mt-3">
-              <button 
-                onClick={() => setQuestions([])} 
-                className="btn btn-secondary"
-              >
-                Create New Quiz
-              </button>
+            
+            {isSubmitted && (
+              <div style={styles.feedback}>
+                {selectedAnswer === questions[current].answer ? (
+                  <div style={styles.correctIndicator}>Correct! Well done!</div>
+                ) : (
+                  <>
+                    <div style={styles.incorrectIndicator}>
+                      Incorrect. The correct answer is: {questions[current].answer}
+                    </div>
+                    <div style={{ marginTop: "0.5rem" }}>
+                      {questions[current].explanation || "Review this concept and try again."}
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+            
+            <div style={styles.buttonGroup}>
+              {!isSubmitted ? (
+                <button 
+                  onClick={handleSubmit} 
+                  style={{ ...styles.button, ...styles.secondaryButton }}
+                  disabled={selectedAnswer === null}
+                >
+                  Submit Answer
+                </button>
+              ) : (
+                <button 
+                  onClick={handleNext} 
+                  style={{ ...styles.button, ...styles.secondaryButton }}
+                >
+                  {current + 1 < questions.length ? "Next Question" : "See Results"}
+                </button>
+              )}
             </div>
           </div>
-        </div>
-      )}
-      
-      <div className="mt-3">
-        <Link to="/" className="btn btn-outline-secondary">Go Home</Link>
-      </div>
+        )}
+      </main>
+
+      <footer style={styles.footer}>
+        <p>
+          Project by Daniel M., Zheng C., Donovan T., and Jared L.
+        </p>
+      </footer>
     </div>
   );
 }

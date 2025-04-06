@@ -3,24 +3,37 @@ import { useState, useEffect } from "react";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import wordLess from '../assets/upGradeWordless.png';
 import upGradeLogo from '../assets/upgradeWithText.png';
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../../firebase";
+import GoogleLoginButton from "../components/GoogleLoginButton";
+
 
 export default function TestPage() {
-  const [typedText, setTypedText] = useState("");
-  const fullText = "Weelcome to the new way to learn.";
+    const [user, setUser] = useState(null);
+    const [typedText, setTypedText] = useState("");
+    const fullText = "Weelcome to the new way to learn.";
 
-  useEffect(() => {
-    let index = 0;
-    const interval = setInterval(() => {
-      if (index < fullText.length - 1) {
-        setTypedText((prev) => prev + fullText[index]);
-        index++;
-      } else {
-        clearInterval(interval); // stop when done
-      }
-    }, 50);
-  
-    return () => clearInterval(interval);
-  }, []);
+    useEffect(() => {
+        let index = 0;
+        const interval = setInterval(() => {
+        if (index < fullText.length - 1) {
+            setTypedText((prev) => prev + fullText[index]);
+            index++;
+        } else {
+            clearInterval(interval); // stop when done
+        }
+        }, 50);
+    
+        return () => clearInterval(interval);
+    }, []);
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+        setUser(firebaseUser);
+        });
+        return () => unsubscribe();
+    }, []);
+
   const styles = {
     body: {
         background: "linear-gradient(to bottom, #503D3F, #2a1f21)",
@@ -75,8 +88,15 @@ export default function TestPage() {
       <header style={styles.header}>
         <h3 style={{ marginTop: "10px", marginLeft: "5px" }}>Up-Grade</h3>
         <nav>
-          <a href="#" style={{ ...styles.navLink, ...styles.activeLink }}>Home</a>
-          <Link to="/QuizPage" style={styles.navLink}>Create a Quiz</Link>
+            <a href="#" style={{ ...styles.navLink, ...styles.activeLink }}>Home</a>
+            <Link to="/QuizPage" style={styles.navLink}>Create a Quiz</Link>
+            <div style={styles.navLink}>
+                {user ? (
+                    <p>Welcome, {user.displayName}</p>
+                ) : (
+                    <GoogleLoginButton onLogin={setUser} />
+                )}
+            </div>
         </nav>
       </header>
 

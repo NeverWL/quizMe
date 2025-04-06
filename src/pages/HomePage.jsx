@@ -78,6 +78,7 @@ export default function HomePage() {
         <nav>
           <a href="#" style={{ ...styles.navLink, ...styles.activeLink }}>Home</a>
           <Link to="/QuizPage" style={styles.navLink}>Create a Quiz</Link>
+          <Link to="/TestPage" style={styles.navLink}>Test</Link>
         </nav>
       </header>
 

@@ -23,11 +23,11 @@ export default function TestPage() {
   }, []);
   const styles = {
     body: {
-      backgroundColor: "#503D3F",
-      color: "#FDE8E9",
-      minHeight: "100vh",
-      display: "flex",
-      flexDirection: "column",
+        background: "linear-gradient(to bottom, #503D3F, #2a1f21)",
+        color: "#FDE8E9",
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
     },
     header: {
       padding: "1rem",
@@ -55,6 +55,7 @@ export default function TestPage() {
     },
     button: {
       backgroundColor: "#FFFFFF",
+      textDecoration: "none",
       color: "#503D3F",
       borderRadius: "20px",
       border: "1px solid #503D3F",
@@ -88,7 +89,7 @@ export default function TestPage() {
             height: "100px",
             marginLeft: "0px",
             marginRight: "0px",
-            marginBottom: "0px",
+            marginBottom: "1rem",
             verticalAlign: "middle"
           }}
         />
@@ -96,7 +97,7 @@ export default function TestPage() {
           {typedText}
           <span style={{ borderRight: "2px solid #FDE8E9", animation: "blink 1s steps(1) infinite" }}></span>
         </p>
-        <button style={styles.button}>Create a Quiz</button>
+        <Link to="/QuizPage" style={styles.button}>Create a Quiz</Link>
       </main>
 
       <footer style={styles.footer}>

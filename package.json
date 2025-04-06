@@ -1,15 +1,16 @@
 {
-  "homepage": "https://neverwl.github.io/quizMe",
+  "homepage": "https://neverwl.github.io/quizMe/",
   "name": "package.json",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "predeploy": "npm run dev",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.0",

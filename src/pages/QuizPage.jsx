@@ -393,7 +393,7 @@ export default function QuizPage() {
       - A clear question related to the study material
       - 4 plausible answer choices (a, b, c, d)
       - The correct answer
-      - A brief explanation of why the answer is correct
+      - A explanation of why the answer is correct
       
       Format each question like this:
       {

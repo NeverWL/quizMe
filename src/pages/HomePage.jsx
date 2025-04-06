@@ -85,7 +85,7 @@ export default function HomePage() {
           <a href="#" style={{ ...styles.navLink, ...styles.activeLink }}>Home</a>
           <span style={styles.navLink}>
               {user ? (
-                  <span>Welcome, {user.displayName}</span>
+                  <span>Hi, {user.displayName}</span>
               ) : (
                   <GoogleLoginButton />
               )}

@@ -67,9 +67,9 @@ export default function HomePage() {
       padding: "2rem",
     },
     button: {
-      backgroundColor: "#FFFFFF",
+      backgroundColor: "#FDE8E9",
       textDecoration: "none",
-      color: "#503D3F",
+      color: "black",
       borderRadius: "20px",
       border: "1px solid #503D3F",
       fontWeight: "bold",

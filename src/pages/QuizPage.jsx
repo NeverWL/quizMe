@@ -393,7 +393,7 @@ export default function QuizPage() {
           <h3 style={{ margin: 0 }}>Up-Grade</h3>
         </div>
         <nav>
-          <Link to="/" style={styles.navLink}>Home</Link>
+          <Link to="/quizMe" style={styles.navLink}>Home</Link>
           <Link to="/QuizPage" style={{ ...styles.navLink, ...styles.activeLink }}>Create a Quiz</Link>
         </nav>
       </header>

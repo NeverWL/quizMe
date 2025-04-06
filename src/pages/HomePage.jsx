@@ -12,7 +12,7 @@ export default function HomePage() {
         <Link to="/OCRPage">OCR Page</Link>
       </div>
     );
-    // return (
+    // return ( a
     //     <>
     //         <div> Home page </div>
     //         <Link to="/SelectPage">Select Page</Link>

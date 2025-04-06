@@ -181,6 +181,7 @@ export default function ResultsPage() {
         setShowAnswer(false);
     };
 
+<<<<<<< HEAD
     const handlePrevCard = () => {
         setCurrentCard((prev) => (prev - 1 + questions.length) % questions.length);
         setShowAnswer(false);
@@ -211,6 +212,11 @@ export default function ResultsPage() {
             >
                 <FiChevronRight size={20} />
             </button>
+=======
+        <div className = "container vh-100 d-flex flex-column justify-content-center align-items-center">
+          <h1 className="mb-3" style = {styles.header}>Your Score: {state.score} / {state.total}</h1>
+          <button onClick={() => navigate("/quizMe")} style={styles.button}>Back to Home</button>
+>>>>>>> 54ff3946e5ab61937d83dcaa5564cdf00bf32f86
         </div>
     );
 

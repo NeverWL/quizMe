@@ -9,6 +9,7 @@ import QuizPage from './pages/QuizPage';
 import ResultsPage from './pages/ResultsPage';
 import TestPage from './pages/TestPage';
 import OCRPage from './pages/OCRPage';
+import { AuthProvider } from "./context/AuthContext";
 import 'bootstrap/dist/css/bootstrap.css'
 
 const router = createBrowserRouter([
@@ -42,6 +43,8 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
   </StrictMode>,
 )

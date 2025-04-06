@@ -5,8 +5,12 @@ import Tesseract from "tesseract.js";
 import wordLess from '../assets/upGradeWordless.png';
 import { FiUpload, FiFileText, FiImage, FiX } from "react-icons/fi";
 import exportToFirestore from "../components/ExportToFireStore"; // Import the function
+import { useAuth } from "../context/AuthContext";
+
+
 export default function QuizPage() {
   // Quiz state
+  const { user } = useAuth();
   const [questions, setQuestions] = useState([]);
   const [current, setCurrent] = useState(0);
   const [score, setScore] = useState(0);
@@ -427,10 +431,8 @@ export default function QuizPage() {
       setSelectedAnswer(null);
       setIsSubmitted(false);
 
-      console.log(user);
-
       //Firestore
-      const userId = "USER_ID"; // Replace with actual user ID
+      const userId = user.uid; // Replace with actual user ID
       exportToFirestore(userId, generatedQuestions);
 
     } catch (err) {

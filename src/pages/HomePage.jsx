@@ -7,9 +7,10 @@ import upGradeLogo from '../assets/upgradeWithText.png';
 import GoogleLoginButton from "../components/GoogleLoginButton";
 import { auth } from "../../firebase";
 import { onAuthStateChanged } from "firebase/auth";
+import { useAuth } from "../context/AuthContext";
 
 export default function HomePage() {
-  const [user, setUser] = useState(null);
+  const { user } = useAuth();
   const [typedText, setTypedText] = useState("");
   const fullText = "Weelcome to the new way to learn.";
 
@@ -25,13 +26,6 @@ export default function HomePage() {
     }, 50);
   
     return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-    setUser(firebaseUser);
-    });
-    return () => unsubscribe();
   }, []);
 
   const styles = {
@@ -93,7 +87,7 @@ export default function HomePage() {
               {user ? (
                   <span>Welcome, {user.displayName}</span>
               ) : (
-                  <GoogleLoginButton onLogin={setUser} />
+                  <GoogleLoginButton />
               )}
           </span>
         </nav>

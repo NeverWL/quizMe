@@ -437,7 +437,7 @@ export default function QuizPage() {
 
     } catch (err) {
       console.error("API Error:", err);
-      setError("Failed to generate quiz. Please try again.");
+      setError("Failed to generate quiz or couldn't due to no log in. Please try again.");
     } finally {
       setIsLoading(false);
     }

@@ -5,8 +5,6 @@ import { getFirestore, collection, getDocs, query, where } from "firebase/firest
 import { useAuth } from "../context/AuthContext";
 import wordLess from '../assets/upGradeWordless.png';
 
-
-
 export default function HistoryPage() {
   const { user } = useAuth();
   const auth = getAuth();
@@ -15,6 +13,7 @@ export default function HistoryPage() {
   const navigate = useNavigate();
   const [quizData, setQuizData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   console.log(user);
 
@@ -42,8 +41,13 @@ export default function HistoryPage() {
     fetchUserQuizzes();
   }, [user, db]);
 
+  const goToPreviousQuiz = () => {
+    setCurrentIndex(currentIndex === 0 ? quizData.length - 1 : currentIndex - 1);
+  };
 
-  
+  const goToNextQuiz = () => {
+    setCurrentIndex(currentIndex === quizData.length - 1 ? 0 : currentIndex + 1);
+  };
 
   const styles = {
     body: {
@@ -83,18 +87,54 @@ export default function HistoryPage() {
       transition: "all 0.3s ease",
     },
     card: {
-      backgroundColor: "#FDE8E9",
-      padding: "1rem",
-      borderRadius: "10px",
-      margin: "1rem 0",
+      backgroundColor: "#615756",
+      padding: "1.5rem",
+      borderRadius: "16px",
+      margin: "1rem auto",
       width: "100%",
       maxWidth: "600px",
+      boxShadow: "0 4px 20px rgba(0, 0, 0, 0.2)",
+      transition: "transform 0.2s ease",
+    },
+    cardHeader: {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: "1rem",
+      color: "#FDE8E9",
+    },
+    arrowButton: {
+      backgroundColor: "#ADDC92",
+      color: "#503D3F",
+      border: "none",
+      fontSize: "1.5rem",
+      padding: "0.5rem 1rem",
+      cursor: "pointer",
+      borderRadius: "50%",
+    },
+    cardBody: {
+      color: "#503D3F",
+      fontSize: "1.1rem",
+      padding: "0.5rem",
+      borderRadius: "8px",
+      backgroundColor: "#615756"
     },
     question: {
-      fontWeight: "bold",
+      marginBottom: "4rem",
     },
-    answer: {
-      marginBottom: "0.5rem",
+    questionText: {
+      fontWeight: "bold",
+      color: "#FDE8E9",
+    },
+    answerText: {
+      color: "#ADDC92",
+    },
+    explanationText: {
+      color: "#E3BAC6",
+      fontStyle: "italic",
+    },
+    choiceText: {
+      color: "#FDE8E9",
     },
   };
 
@@ -112,16 +152,14 @@ export default function HistoryPage() {
 
       <div className="container d-flex flex-column align-items-center">
         <img
-                  src={wordLess}
-                  alt="Home Icon"
-                  style={{
-                    width: "100px",
-                    height: "100px",
-                    marginLeft: "0px",
-                    marginRight: "0px",
-                    marginBottom: "1rem",
-                  }}
-                />
+          src={wordLess}
+          alt="Home Icon"
+          style={{
+            width: "100px",
+            height: "100px",
+            marginBottom: "1rem",
+          }}
+        />
         {loading ? (
           <p style={{ color: "#FDE8E9" }}>Loading...</p>
         ) : !user ? (
@@ -129,17 +167,41 @@ export default function HistoryPage() {
         ) : quizData.length === 0 ? (
           <p style={{ color: "#FDE8E9" }}>No history found.</p>
         ) : (
-          quizData.map((quiz, index) => (
-            <div key={index} style={styles.card}>
-              <h4>{quiz.quizName || `Quiz #${index + 1}`}</h4>
-              {quiz.questions && quiz.questions.map((q, i) => (
-                <div key={i}>
-                  <p style={styles.question}>Q{i + 1}: {q.question}</p>
-                  <p style={styles.answer}>A: {q.answer}</p>
-                </div>
-              ))}
+          <>
+            <div className="card" style={styles.card}>
+              <div style={styles.cardHeader}>
+                <button
+                  onClick={goToPreviousQuiz}
+                  style={styles.arrowButton}
+                  className="btn btn-light"
+                >
+                  &#8592; {/* Left arrow */}
+                </button>
+                <h4 style={{ flex: 1, textAlign: "center" }}>
+                  {quizData[currentIndex].quizName || `Quiz #${currentIndex + 1}`}
+                </h4>
+                <button
+                  onClick={goToNextQuiz}
+                  style={styles.arrowButton}
+                  className="btn btn-light"
+                >
+                  &#8594; {/* Right arrow */}
+                </button>
+              </div>
+
+              <div className="card-body" style={styles.cardBody}>
+                {quizData[currentIndex].questions && quizData[currentIndex].questions.map((q, i) => (
+                  <div key={i} style={styles.question}>
+                    <p style={styles.questionText}>Q{i + 1}: {q.question}</p>
+                    <p style={styles.answerText}><strong>A:</strong> {q.answer}</p>
+                    {q.explanation && (
+                      <p style={styles.explanationText}><em>{q.explanation}</em></p>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
-          ))
+          </>
         )}
       </div>
     </div>

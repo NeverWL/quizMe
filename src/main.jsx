@@ -11,7 +11,9 @@ import TestPage from './pages/TestPage';
 import OCRPage from './pages/OCRPage';
 import HistoryPage from './pages/HistoryPage';
 import { AuthProvider } from "./context/AuthContext";
-import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+
 
 const router = createBrowserRouter([
   {

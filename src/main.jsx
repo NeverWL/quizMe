@@ -9,6 +9,7 @@ import QuizPage from './pages/QuizPage';
 import ResultsPage from './pages/ResultsPage';
 import TestPage from './pages/TestPage';
 import OCRPage from './pages/OCRPage';
+import HistoryPage from './pages/HistoryPage';
 import { AuthProvider } from "./context/AuthContext";
 import 'bootstrap/dist/css/bootstrap.css'
 
@@ -37,6 +38,10 @@ const router = createBrowserRouter([
   {
     path: '/OCRPage',
     element: <OCRPage />
+  }, 
+  {
+    path: '/HistoryPage',
+    element: <HistoryPage />,
   }
 ]);
 

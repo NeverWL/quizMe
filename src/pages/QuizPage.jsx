@@ -705,7 +705,7 @@ export default function QuizPage() {
                   style={{ ...styles.button, ...styles.secondaryButton }}
                   disabled={selectedAnswer === null}
                 >
-                  Submit Answer
+                  Submit
                 </button>
               ) : (
                 <button 

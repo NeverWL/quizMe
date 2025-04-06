@@ -486,7 +486,12 @@ export default function QuizPage() {
             {isSubmitted && (
               <div style={styles.feedback}>
                 {selectedAnswer === questions[current].answer ? (
-                  <div style={styles.correctIndicator}>Correct! Well done!</div>
+                  <>
+                    <div style={styles.correctIndicator}>Correct! Well done!</div>
+                    <div style={{ marginTop: "0.5rem" }}>
+                      {questions[current].explanation || "Good Job!"}
+                    </div>
+                  </>
                 ) : (
                   <>
                     <div style={styles.incorrectIndicator}>

@@ -4,9 +4,8 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import Tesseract from "tesseract.js";
 import wordLess from '../assets/upGradeWordless.png';
 import { FiUpload, FiFileText, FiImage, FiX } from "react-icons/fi";
-import exportToFirestore from "../components/ExportToFireStore"; // Import the function
+import exportToFirestore from "../components/ExportToFireStore";
 import { useAuth } from "../context/AuthContext";
-
 
 export default function QuizPage() {
   // Quiz state
@@ -432,7 +431,7 @@ export default function QuizPage() {
       setIsSubmitted(false);
 
       //Firestore
-      const userId = user.uid; // Replace with actual user ID
+      const userId = user.uid;
       exportToFirestore(userId, generatedQuestions);
 
     } catch (err) {
@@ -461,7 +460,7 @@ export default function QuizPage() {
     }
   };
 
-  // New next question handler
+  // Updated next question handler with proper navigation to ResultsPage
   const handleNext = () => {
     setSelectedAnswer(null);
     setIsSubmitted(false);
@@ -469,10 +468,12 @@ export default function QuizPage() {
     if (current + 1 < questions.length) {
       setCurrent(current + 1);
     } else {
+      // Navigate to ResultsPage with all required data
       navigate("/ResultsPage", { 
         state: { 
           score: score, 
-          total: questions.length 
+          total: questions.length,
+          questions: questions // Passing the full questions array
         } 
       });
     }

@@ -34,6 +34,15 @@ export default function QuizPage() {
       flexDirection: "column",
       padding: "0 1rem",
     },
+    body2: {
+      background: "linear-gradient(to bottom, #503D3F, #2A1F21)",
+      maxHeight: "100vh",
+      maxWidth: "100vw",
+      display: "flex",
+      flexDirection: "column",
+      padding: "0 1rem",
+      margin: "0",
+    },
     textBody: {
       border: "none",
       backgroundColor: "rgba(253, 232, 233, 0)",
@@ -253,13 +262,10 @@ export default function QuizPage() {
     },
     loading: {
       color: "#FDE8E9",
-      textAlign: "center",
-      fontSize: "1.2rem",
-    },
-    error: {
-      color: "#FF6B6B",
-      textAlign: "center",
-      margin: "1rem 0",
+      padding: "1rem",
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
     },
     footer: {
       color: "#FFFFFF",
@@ -470,8 +476,25 @@ export default function QuizPage() {
     setIsSubmitted(false);
   };
 
-  if (isLoading) return <div style={styles.loading}>Generating quiz questions...</div>;
-  if (error) return <div style={styles.error}>Error: {error}</div>;
+  if (isLoading) return <div style = {styles.body2}>
+    <div 
+      className = "container vh-100 d-flex flex-column justify-content-center align-items-center" 
+      style={styles.loading}>Generating quiz questions...
+    </div>
+    </div>;
+
+  if (error) return <div style = {styles.body2}>
+    <header style={styles.header}>
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <h3 style={{ margin: 0, color: "#FDE8E9" }}>Up-Grade</h3>
+        </div>
+        <nav>
+          <Link to="/quizMe" style={styles.navLink}>Home</Link>
+          <Link to="/QuizPage" style={{ ...styles.navLink, ...styles.activeLink }}>Create a Quiz</Link>
+        </nav>
+    </header>
+    <div className = "container vh-100 d-flex flex-column justify-content-center align-items-center" style={styles.loading}>Error: {error}</div>;
+  </div>;
 
   return (
     <div style={styles.body}>

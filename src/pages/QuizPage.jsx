@@ -3,8 +3,8 @@ import { useState, useEffect, useRef } from "react";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import Tesseract from "tesseract.js";
 import wordLess from '../assets/upGradeWordless.png';
+import { FiUpload, FiFileText, FiImage, FiX } from "react-icons/fi";
 import exportToFirestore from "../components/ExportToFireStore"; // Import the function
-
 export default function QuizPage() {
   // Quiz state
   const [questions, setQuestions] = useState([]);
@@ -27,12 +27,21 @@ export default function QuizPage() {
 
   const styles = {
     body: {
-      background: "linear-gradient(to bottom, #503D3F, #2A1F21",
+      background: "linear-gradient(to bottom, #503D3F, #2A1F21)",
       color: "#FDE8E9",
       minHeight: "100vh",
       display: "flex",
       flexDirection: "column",
       padding: "0 1rem",
+    },
+    body2: {
+      background: "linear-gradient(to bottom, #503D3F, #2A1F21)",
+      maxHeight: "100vh",
+      maxWidth: "100vw",
+      display: "flex",
+      flexDirection: "column",
+      padding: "0 1rem",
+      margin: "0",
     },
     textBody: {
       border: "none",
@@ -81,14 +90,63 @@ export default function QuizPage() {
       alignItems: "center",
       padding: "2rem",
     },
-    card: {
-      backgroundColor: "rgba(253, 232, 233, 0)",
-      color: "#FDE8E9",
+    uploadCard: {
+      backgroundColor: "rgba(253, 232, 233, 0.1)",
+      backdropFilter: "blur(10px)",
+      border: "1px solid rgba(253, 232, 233, 0.2)",
       borderRadius: "15px",
       padding: "2rem",
       width: "100%",
       maxWidth: "800px",
-      boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
+      boxShadow: "0 8px 32px rgba(0,0,0,0.2)",
+      marginBottom: "2rem",
+    },
+    uploadSection: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      padding: imagePath ? "1rem" : "2rem",
+      border: imagePath ? "none" : "2px dashed rgba(253, 232, 233, 0.3)",
+      borderRadius: "10px",
+      marginBottom: "1.5rem",
+      transition: "all 0.3s ease",
+      backgroundColor: imagePath ? "transparent" : "rgba(253, 232, 233, 0.05)",
+      minHeight: imagePath ? "auto" : "200px",
+      justifyContent: "center",
+      width: "100%"
+    },
+    uploadIcon: {
+      fontSize: "2.5rem",
+      color: "#ADDC92",
+      marginBottom: "1rem",
+    },
+    uploadText: {
+      color: "#FDE8E9",
+      marginBottom: "1rem",
+      textAlign: "center",
+    },
+    uploadButton: {
+      backgroundColor: "#ADDC92",
+      color: "#503D3F",
+      borderRadius: "20px",
+      border: "none",
+      fontWeight: "bold",
+      padding: "0.75rem 1.5rem",
+      cursor: "pointer",
+      display: "flex",
+      alignItems: "center",
+      gap: "0.5rem",
+      transition: "all 0.3s ease",
+    },
+    textSection: {
+      marginTop: "2rem",
+    },
+    sectionHeader: {
+      display: "flex",
+      alignItems: "center",
+      gap: "0.5rem",
+      color: "#FDE8E9",
+      marginBottom: "1rem",
     },
     title: {
       color: "#FDE8E9",
@@ -100,7 +158,7 @@ export default function QuizPage() {
       textDecoration: "none",
       color: "#FFFFFF",
       borderRadius: "20px",
-      border: "nonex",
+      border: "none",
       fontWeight: "bold",
       padding: "0.75rem 1.5rem",
       margin: "0.5rem",
@@ -115,7 +173,7 @@ export default function QuizPage() {
       textDecoration: "none",
       color: "#FFFFFF",
       borderRadius: "20px",
-      border: "!px solid #503D3F",
+      border: "1px solid #503D3F",
       fontWeight: "bold",
       padding: "0.75rem 1.5rem",
       margin: "0.5rem",
@@ -142,12 +200,40 @@ export default function QuizPage() {
       marginBottom: "1rem",
       resize: "vertical",
     },
+    imagePreviewContainer: {
+      position: "relative",
+      width: "100%",
+      maxWidth: "600px",
+      margin: "0 auto",
+      textAlign: "center"
+    },
     imagePreview: {
       maxWidth: "100%",
-      maxHeight: "200px",
+      maxHeight: "300px",
       borderRadius: "10px",
-      margin: "1rem 0",
-      border: "2px dashed #503D3F",
+      objectFit: "contain",
+      background: "rgba(0,0,0,0.1)",
+      padding: "10px",
+      boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
+    },
+    closeButton: {
+      position: "absolute",
+      top: "10px",
+      right: "10px",
+      background: "rgba(0,0,0,0.7)",
+      color: "white",
+      border: "none",
+      borderRadius: "50%",
+      width: "30px",
+      height: "30px",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      cursor: "pointer",
+      zIndex: 10,
+      "&:hover": {
+        background: "rgba(0,0,0,0.9)"
+      }
     },
     questionCard: {
       backgroundColor: "#FDE8E9",
@@ -176,20 +262,16 @@ export default function QuizPage() {
     },
     loading: {
       color: "#FDE8E9",
-      textAlign: "center",
-      fontSize: "1.2rem",
-    },
-    error: {
-      color: "#FF6B6B",
-      textAlign: "center",
-      margin: "1rem 0",
+      padding: "1rem",
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
     },
     footer: {
       color: "#FFFFFF",
       textAlign: "center",
       padding: "1rem",
     },
-    // New styles for quiz feedback
     correctAnswer: {
       backgroundColor: "#ADDC92",
       borderColor: "#ADDC92",
@@ -233,6 +315,17 @@ export default function QuizPage() {
       backgroundColor: "#503D3F",
       color: "#FDE8E9",
       borderColor: "#503D3F",
+    },
+    divider: {
+      display: "flex", 
+      alignItems: "center", 
+      margin: "1.5rem 0",
+      color: "rgba(253, 232, 233, 0.5)"
+    },
+    dividerLine: {
+      flex: 1, 
+      height: "1px", 
+      backgroundColor: "rgba(253, 232, 233, 0.3)"
     }
   };
 
@@ -300,8 +393,8 @@ export default function QuizPage() {
         model: "gemini-1.5-flash-latest"
       });
       
-      const prompt = `
-      Given the following study guide, generate a ${questionCount}-question multiple choice quiz.
+      const prompt = 
+      `Given the following study guide, generate a ${questionCount}-question multiple choice quiz.
       For each question, provide:
       - A clear question related to the study material
       - 4 plausible answer choices (a, b, c, d)
@@ -319,8 +412,7 @@ export default function QuizPage() {
       Return only a valid JSON array of these question objects.
       
       Study Guide:
-      ${studyGuide}
-      `;
+      ${studyGuide}`;
       
       const result = await model.generateContent(prompt);
       const response = await result.response;
@@ -391,8 +483,25 @@ export default function QuizPage() {
     setIsSubmitted(false);
   };
 
-  if (isLoading) return <div style={styles.loading}>Generating quiz questions...</div>;
-  if (error) return <div style={styles.error}>Error: {error}</div>;
+  if (isLoading) return <div style = {styles.body2}>
+    <div 
+      className = "container vh-100 d-flex flex-column justify-content-center align-items-center" 
+      style={styles.loading}>Generating quiz questions...
+    </div>
+    </div>;
+
+  if (error) return <div style = {styles.body2}>
+    <header style={styles.header}>
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <h3 style={{ margin: 0, color: "#FDE8E9" }}>Up-Grade</h3>
+        </div>
+        <nav>
+          <Link to="/quizMe" style={styles.navLink}>Home</Link>
+          <Link to="/QuizPage" style={{ ...styles.navLink, ...styles.activeLink }}>Create a Quiz</Link>
+        </nav>
+    </header>
+    <div className = "container vh-100 d-flex flex-column justify-content-center align-items-center" style={styles.loading}>Error: {error}</div>;
+  </div>;
 
   return (
     <div style={styles.body}>
@@ -408,72 +517,120 @@ export default function QuizPage() {
 
       <main style={styles.main}>
         {questions.length === 0 ? (
-          // Study guide input section
-          <div style={styles.textBody}>
-            
-            <div style={{ marginBottom: "2rem" }}>
-              <h6 style={styles.headerText}>Upload Study Material Image</h6>
-              <input 
-                type="file" 
-                onChange={handleImageChange} 
-                style={{ display: "none" }}
-                id="imageUpload"
-                accept="image/*"
-              />
-              <label htmlFor="imageUpload" style={styles.button}>
-                Choose Image
-              </label>
-              {imagePath && (
+          <div style={styles.uploadCard}>
+            {/* Image Upload Section */}
+            <div style={styles.uploadSection}>
+              {!imagePath ? (
                 <>
-                  <img src={imagePath} style={styles.imagePreview} alt="Uploaded study material"/>
-                  <button 
-                    onClick={handleExtractText} 
-                    style={styles.button}
-                    disabled={isExtracting}
-                  >
-                    {isExtracting ? "Extracting..." : "Extract Text"}
-                  </button>
+                  <FiImage style={styles.uploadIcon} />
+                  <h4 style={styles.uploadText}>Upload Study Material Image</h4>
+                  <p style={{ ...styles.uploadText, opacity: 0.8, fontSize: "0.9rem" }}>
+                    Supports JPG, PNG, or PDF files
+                  </p>
+                  <input 
+                    type="file" 
+                    onChange={handleImageChange} 
+                    style={{ display: "none" }}
+                    id="imageUpload"
+                    accept="image/*"
+                  />
+                  <label htmlFor="imageUpload" style={styles.uploadButton}>
+                    <FiUpload /> Choose File
+                  </label>
                 </>
+              ) : (
+                <div style={styles.imagePreviewContainer}>
+                  <button 
+                    onClick={() => setImagePath("")}
+                    style={styles.closeButton}
+                  >
+                    <FiX />
+                  </button>
+                  <img 
+                    src={imagePath} 
+                    style={styles.imagePreview} 
+                    alt="Uploaded study material"
+                  />
+                </div>
               )}
             </div>
-            
-            <div style={{ marginBottom: "2rem" }}>
-              <h6 style={styles.headerText}>Or Enter Study Guide Text</h6>
+
+            {/* Extract Button - Only shows when image is uploaded */}
+            {imagePath && (
+              <button 
+                onClick={handleExtractText} 
+                style={{
+                  ...styles.button,
+                  width: "100%",
+                  maxWidth: "300px",
+                  margin: "0 auto 1.5rem",
+                  display: "block"
+                }}
+                disabled={isExtracting}
+              >
+                {isExtracting ? "Extracting Text..." : "Extract Text from Image"}
+              </button>
+            )}
+
+            {/* Divider - Only shows when no image is uploaded or after text extraction */}
+            {(!imagePath || studyGuide) && (
+              <div style={styles.divider}>
+                <div style={styles.dividerLine}></div>
+                <span style={{ margin: "0 1rem" }}>OR</span>
+                <div style={styles.dividerLine}></div>
+              </div>
+            )}
+
+            {/* Text Input Section */}
+            <div style={styles.textSection}>
+              <div style={styles.sectionHeader}>
+                <FiFileText />
+                <h4>Enter Study Guide Text</h4>
+              </div>
               <textarea
                 ref={textareaRef}
                 style={styles.textarea}
                 value={studyGuide}
                 onChange={(e) => setStudyGuide(e.target.value)}
-                placeholder="Paste your study guide here or extract from image above..."
+                placeholder="Paste your study notes, textbook excerpts, or any relevant material..."
               />
             </div>
-            
-            <div style={{ marginBottom: "2rem" }}>
+
+            {/* Question Count and Generate Button */}
+            <div style={{ marginTop: "2rem" }}>
               <label style={styles.questionsText}>
-                Number of Questions (1-20):
+                Number of Questions to Generate (1-20):
               </label>
               <input
                 type="number"
-                style={{ ...styles.input, width: "80px", textAlign: "center" }}
+                style={{ 
+                  ...styles.input, 
+                  width: "80px", 
+                  textAlign: "center",
+                  marginBottom: "2rem"
+                }}
                 min="1"
                 max="20"
                 value={questionCount || ''}
                 onChange={handleQuestionCountChange}
               />
-            </div>
-            
-            <div style = {{marginBottom: "2rem", }}>
-            <button 
-              onClick={generateQuiz} 
-              style={styles.secondaryButton}
-              disabled={!studyGuide.trim() || isExtracting || !questionCount}
-            >
-              Generate {questionCount} Question{questionCount !== 1 ? 's' : ''}
-            </button>
+              
+              <button 
+                onClick={generateQuiz} 
+                style={{
+                  ...styles.secondaryButton,
+                  width: "100%",
+                  padding: "1rem",
+                  fontSize: "1.1rem",
+                  boxShadow: "0 4px 6px rgba(0,0,0,0.1)"
+                }}
+                disabled={!studyGuide.trim() || isExtracting || !questionCount}
+              >
+                Generate {questionCount} Question{questionCount !== 1 ? 's' : ''}
+              </button>
             </div>
           </div>
         ) : (
-          // Updated Quiz interface
           <div style={styles.questionCard}>
             <h2 style={{ color: "#503D3F", marginBottom: "1rem" }}>
               Question {current + 1} of {questions.length}
@@ -559,12 +716,6 @@ export default function QuizPage() {
           </div>
         )}
       </main>
-
-      {/*<footer style={styles.footer}>
-        <p>
-          Project by Daniel M., Zheng C., Donovan T., and Jared L.
-        </p>
-      </footer>*/}
     </div>
   );
 }

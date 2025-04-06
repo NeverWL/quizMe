@@ -26,18 +26,42 @@ export default function QuizPage() {
 
   const styles = {
     body: {
-      backgroundColor: "#503D3F",
+      background: "linear-gradient(to bottom, #503D3F, #2A1F21",
       color: "#FDE8E9",
       minHeight: "100vh",
       display: "flex",
       flexDirection: "column",
       padding: "0 1rem",
     },
+    textBody: {
+      border: "none",
+      backgroundColor: "rgba(253, 232, 233, 0)",
+      color: "#FDE8E9",
+      display: "flex",
+      flexDirection: "column",
+      padding: "0",
+      width: "100%",
+      maxWidth: "800px",
+    },
+    textBox: {
+      border: "none",
+      backgroundColor: "rgba(157, 155, 155, 0.37)",
+      color: "#FFFFFF",
+    },
+    headerText: {
+      color: "#FDE8E9",
+      marginBottom: "1rem",
+    },
     header: {
       padding: "1rem",
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center",
+    },
+    questionsText: {
+      display: "block",
+      marginBottom: "0.5rem",
+      color: "#FDE8E9"
     },
     navLink: {
       margin: "0 1rem",
@@ -57,8 +81,8 @@ export default function QuizPage() {
       padding: "2rem",
     },
     card: {
-      backgroundColor: "#FDE8E9",
-      color: "#503D3F",
+      backgroundColor: "rgba(253, 232, 233, 0)",
+      color: "#FDE8E9",
       borderRadius: "15px",
       padding: "2rem",
       width: "100%",
@@ -66,15 +90,16 @@ export default function QuizPage() {
       boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
     },
     title: {
-      color: "#503D3F",
+      color: "#FDE8E9",
       marginBottom: "1.5rem",
       textAlign: "center",
     },
     button: {
-      backgroundColor: "#503D3F",
-      color: "#FDE8E9",
+      backgroundColor: "#ADDC92",
+      textDecoration: "none",
+      color: "#FFFFFF",
       borderRadius: "20px",
-      border: "none",
+      border: "nonex",
       fontWeight: "bold",
       padding: "0.75rem 1.5rem",
       margin: "0.5rem",
@@ -86,7 +111,15 @@ export default function QuizPage() {
     },
     secondaryButton: {
       backgroundColor: "#ADDC92",
-      color: "#503D3F",
+      textDecoration: "none",
+      color: "#FFFFFF",
+      borderRadius: "20px",
+      border: "!px solid #503D3F",
+      fontWeight: "bold",
+      padding: "0.75rem 1.5rem",
+      margin: "0.5rem",
+      cursor: "pointer",
+      transition: "all 0.3s ease",
     },
     input: {
       backgroundColor: "#FFFFFF",
@@ -357,19 +390,10 @@ export default function QuizPage() {
     <div style={styles.body}>
       <header style={styles.header}>
         <div style={{ display: "flex", alignItems: "center" }}>
-          <img
-            src={wordLess}
-            alt="UpGrade Logo"
-            style={{
-              width: "40px",
-              height: "40px",
-              marginRight: "10px"
-            }}
-          />
           <h3 style={{ margin: 0 }}>Up-Grade</h3>
         </div>
         <nav>
-          <Link to="/" style={styles.navLink}>Home</Link>
+          <Link to="/quizMe" style={styles.navLink}>Home</Link>
           <Link to="/QuizPage" style={{ ...styles.navLink, ...styles.activeLink }}>Create a Quiz</Link>
         </nav>
       </header>
@@ -377,11 +401,10 @@ export default function QuizPage() {
       <main style={styles.main}>
         {questions.length === 0 ? (
           // Study guide input section
-          <div style={styles.card}>
-            <h2 style={styles.title}>Create Your Study Guide</h2>
+          <div style={styles.textBody}>
             
             <div style={{ marginBottom: "2rem" }}>
-              <h3 style={{ color: "#503D3F", marginBottom: "1rem" }}>Upload Study Material Image</h3>
+              <h6 style={styles.headerText}>Upload Study Material Image</h6>
               <input 
                 type="file" 
                 onChange={handleImageChange} 
@@ -407,7 +430,7 @@ export default function QuizPage() {
             </div>
             
             <div style={{ marginBottom: "2rem" }}>
-              <h3 style={{ color: "#503D3F", marginBottom: "1rem" }}>Or Enter Study Guide Text</h3>
+              <h6 style={styles.headerText}>Or Enter Study Guide Text</h6>
               <textarea
                 ref={textareaRef}
                 style={styles.textarea}
@@ -418,7 +441,7 @@ export default function QuizPage() {
             </div>
             
             <div style={{ marginBottom: "2rem" }}>
-              <label style={{ display: "block", marginBottom: "0.5rem", color: "#503D3F" }}>
+              <label style={styles.questionsText}>
                 Number of Questions (1-20):
               </label>
               <input
@@ -431,13 +454,15 @@ export default function QuizPage() {
               />
             </div>
             
+            <div style = {{marginBottom: "2rem", }}>
             <button 
               onClick={generateQuiz} 
-              style={{ ...styles.button, ...styles.secondaryButton }}
+              style={styles.secondaryButton}
               disabled={!studyGuide.trim() || isExtracting || !questionCount}
             >
               Generate {questionCount} Question{questionCount !== 1 ? 's' : ''}
             </button>
+            </div>
           </div>
         ) : (
           // Updated Quiz interface
@@ -527,11 +552,11 @@ export default function QuizPage() {
         )}
       </main>
 
-      <footer style={styles.footer}>
+      {/*<footer style={styles.footer}>
         <p>
           Project by Daniel M., Zheng C., Donovan T., and Jared L.
         </p>
-      </footer>
+      </footer>*/}
     </div>
   );
 }

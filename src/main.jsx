@@ -13,7 +13,7 @@ import 'bootstrap/dist/css/bootstrap.css'
 
 const router = createBrowserRouter([
   {
-    path: '/',
+    path: '/quizMe',
     element: <HomePage />,
     errorElement: <div>404 Not Found</div>,
   }, 

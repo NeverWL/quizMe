@@ -3,7 +3,7 @@ import { useState, useRef } from 'react';
 import Tesseract from 'tesseract.js';
 
 export default function OCRPage() {
-    //Do whatever you want here
+    //Do whatever you want here a
     const hi = 0;
     const [imagePath, setImagePath] = useState("");
     const [text, setText] = useState("Extracted Text");

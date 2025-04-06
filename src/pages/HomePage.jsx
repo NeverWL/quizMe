@@ -69,7 +69,7 @@ export default function HomePage() {
     button: {
       backgroundColor: "#FFFFFF",
       textDecoration: "none",
-      color: "black",
+      color: "#503D3F",
       borderRadius: "20px",
       border: "1px solid #503D3F",
       fontWeight: "bold",

@@ -82,7 +82,6 @@ export default function HomePage() {
       <header style={styles.header}>
         <h3 style={{ marginTop: "10px", marginLeft: "5px" }}>Up-Grade</h3>
         <nav>
-          <a href="#" style={{ ...styles.navLink, ...styles.activeLink }}>Home</a>
           <Link to="/HistoryPage" style={styles.navLink}>History</Link>
           <span style={styles.navLink}>
               {user ? (

@@ -62,8 +62,8 @@ export default function ResultsPage() {
 
 
         <div className = "container vh-100 d-flex flex-column justify-content-center align-items-center">
-        <h1 className="mb-3" style = {styles.header}>Your Score: {state.score} / {state.total}</h1>
-        <button onClick={() => navigate("/quizMe")} style={styles.button}>Back to Home</button>
+          <h1 className="mb-3" style = {styles.header}>Your Score: {state.score} / {state.total}</h1>
+          <button onClick={() => navigate("/quizMe")} style={styles.button}>Back to Home</button>
         </div>
       </div>
     );

@@ -15,7 +15,7 @@ export default function GoogleLoginButton({ onLogin }) {
 
   return (
     <button onClick={handleLogin} className="btn btn-outline-light">
-      Sign in with Google
+      Login
     </button>
   );
 }

@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import Tesseract from "tesseract.js";
 import wordLess from '../assets/upGradeWordless.png';
+import exportToFirestore from "../components/ExportToFireStore"; // Import the function
 
 export default function QuizPage() {
   // Quiz state
@@ -333,6 +334,13 @@ export default function QuizPage() {
       setScore(0);
       setSelectedAnswer(null);
       setIsSubmitted(false);
+
+      console.log(user);
+
+      //Firestore
+      const userId = "USER_ID"; // Replace with actual user ID
+      exportToFirestore(userId, generatedQuestions);
+
     } catch (err) {
       console.error("API Error:", err);
       setError("Failed to generate quiz. Please try again.");

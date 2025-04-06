@@ -9,7 +9,7 @@ export default function ResultsPage() {
     return (
       <div className="container vh-100 d-flex flex-column justify-content-center align-items-center">
         <h1 className="mb-3">Your Score: {state.score} / {state.total}</h1>
-        <button className="btn btn-secondary" onClick={() => navigate("/")}>Back to Home</button>
+        <button className="btn btn-secondary" onClick={() => navigate("/quizMe")}>Back to Home</button>
       </div>
     );
     // return (

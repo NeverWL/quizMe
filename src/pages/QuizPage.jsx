@@ -16,6 +16,7 @@ export default function QuizPage() {
   const [imagePath, setImagePath] = useState("");
   const [studyGuide, setStudyGuide] = useState("");
   const [isExtracting, setIsExtracting] = useState(false);
+  const [questionCount, setQuestionCount] = useState(5);
   const textareaRef = useRef(null);
   
   const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
@@ -40,11 +41,29 @@ export default function QuizPage() {
     .then((result) => {
       setStudyGuide(result.data.text);
       setIsExtracting(false);
-      // Auto-focus the textarea after extraction
       if (textareaRef.current) {
         textareaRef.current.focus();
       }
     });
+  };
+
+  // Handle question count input
+  const handleQuestionCountChange = (e) => {
+    const value = e.target.value;
+    
+    // Allow empty value (so user can delete and type new number)
+    if (value === '') {
+      setQuestionCount('');
+      return;
+    }
+    
+    const numValue = parseInt(value);
+    if (!isNaN(numValue)) {
+      // Only set if within bounds
+      if (numValue >= 1 && numValue <= 20) {
+        setQuestionCount(numValue);
+      }
+    }
   };
 
   // Generate quiz from study guide
@@ -54,19 +73,25 @@ export default function QuizPage() {
       return;
     }
 
+    // Validate question count
+    if (!questionCount || questionCount < 1 || questionCount > 20) {
+      setError("Please enter a valid number of questions (1-20)");
+      return;
+    }
+
     try {
       setIsLoading(true);
       setError(null);
       
       const genAI = new GoogleGenerativeAI(apiKey);
       const model = genAI.getGenerativeModel({ 
-        model: "gemini-2.0-flash"
+        model: "gemini-1.5-flash-latest"
       });
       
       const prompt = `
-      Given the following study guide, generate a 5-question multiple choice quiz.
+      Given the following study guide, generate a ${questionCount}-question multiple choice quiz.
       For each question, provide:
-      - A clear question
+      - A clear question related to the study material
       - 4 plausible answer choices (a, b, c, d)
       - The correct answer
       
@@ -119,7 +144,6 @@ export default function QuizPage() {
     }
   };
 
-  // Render different states
   if (isLoading) return <div className="p-4">Generating quiz questions...</div>;
   if (error) return <div className="p-4 text-danger">Error: {error}</div>;
 
@@ -142,7 +166,7 @@ export default function QuizPage() {
               />
               {imagePath && (
                 <>
-                  <img src={imagePath} className="img-fluid mb-2" alt="Uploaded study material"/>
+                  <img src={imagePath} className="img-fluid mb-2" alt="Uploaded study material" style={{maxHeight: '200px'}}/>
                   <button 
                     onClick={handleExtractText} 
                     className="btn btn-primary"
@@ -167,12 +191,29 @@ export default function QuizPage() {
               />
             </div>
             
+            {/* Number of questions input */}
+            <div className="mb-3">
+              <label htmlFor="questionCountInput" className="form-label">
+                Number of Questions (1-20):
+              </label>
+              <input
+                type="number"
+                id="questionCountInput"
+                className="form-control mb-3"
+                min="1"
+                max="20"
+                value={questionCount || ''}
+                onChange={handleQuestionCountChange}
+                style={{width: '80px'}}
+              />
+            </div>
+            
             <button 
               onClick={generateQuiz} 
               className="btn btn-success"
-              disabled={!studyGuide.trim() || isExtracting}
+              disabled={!studyGuide.trim() || isExtracting || !questionCount}
             >
-              Generate Quiz
+              Generate {questionCount} Question{questionCount !== 1 ? 's' : ''}
             </button>
           </div>
         </div>

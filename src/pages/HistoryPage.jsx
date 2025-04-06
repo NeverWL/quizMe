@@ -5,6 +5,8 @@ import { getFirestore, collection, getDocs, query, where } from "firebase/firest
 import { useAuth } from "../context/AuthContext";
 import wordLess from '../assets/upGradeWordless.png';
 
+
+
 export default function HistoryPage() {
   const { user } = useAuth();
   const auth = getAuth();
@@ -13,7 +15,6 @@ export default function HistoryPage() {
   const navigate = useNavigate();
   const [quizData, setQuizData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [currentIndex, setCurrentIndex] = useState(0);
 
   console.log(user);
 
@@ -41,13 +42,8 @@ export default function HistoryPage() {
     fetchUserQuizzes();
   }, [user, db]);
 
-  const goToPreviousQuiz = () => {
-    setCurrentIndex(currentIndex === 0 ? quizData.length - 1 : currentIndex - 1);
-  };
 
-  const goToNextQuiz = () => {
-    setCurrentIndex(currentIndex === quizData.length - 1 ? 0 : currentIndex + 1);
-  };
+  
 
   const styles = {
     body: {
@@ -56,7 +52,7 @@ export default function HistoryPage() {
       minWidth: "100vw",
       display: "flex",
       flexDirection: "column",
-      padding: "0 1rem",
+      padding: "0rem",
       margin: "0",
     },
     header: {
@@ -87,7 +83,7 @@ export default function HistoryPage() {
       transition: "all 0.3s ease",
     },
     card: {
-      backgroundColor: "#615756",
+      backgroundColor: "#FDE8E9",
       padding: "1.5rem",
       borderRadius: "16px",
       margin: "1rem auto",
@@ -96,46 +92,18 @@ export default function HistoryPage() {
       boxShadow: "0 4px 20px rgba(0, 0, 0, 0.2)",
       transition: "transform 0.2s ease",
     },
-    cardHeader: {
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      marginBottom: "1rem",
-      color: "#FDE8E9",
-    },
-    arrowButton: {
-      backgroundColor: "#ADDC92",
-      color: "#503D3F",
-      border: "none",
-      fontSize: "1.5rem",
-      padding: "0.5rem 1rem",
-      cursor: "pointer",
-      borderRadius: "50%",
-    },
-    cardBody: {
-      color: "#503D3F",
-      fontSize: "1.1rem",
-      padding: "0.5rem",
-      borderRadius: "8px",
-      backgroundColor: "#615756"
-    },
     question: {
-      marginBottom: "4rem",
+      fontWeight: "600",
+      fontSize: "1.1rem",
+      color: "#503D3F",
+      marginBottom: "0.25rem",
     },
-    questionText: {
-      fontWeight: "bold",
-      color: "#FDE8E9",
+    answer: {
+      marginBottom: "1rem",
+      color: "#2A1F21",
     },
-    answerText: {
-      color: "#ADDC92",
-    },
-    explanationText: {
-      color: "#E3BAC6",
-      fontStyle: "italic",
-    },
-    choiceText: {
-      color: "#FDE8E9",
-    },
+    
+    
   };
 
   return (
@@ -152,14 +120,16 @@ export default function HistoryPage() {
 
       <div className="container d-flex flex-column align-items-center">
         <img
-          src={wordLess}
-          alt="Home Icon"
-          style={{
-            width: "100px",
-            height: "100px",
-            marginBottom: "1rem",
-          }}
-        />
+                  src={wordLess}
+                  alt="Home Icon"
+                  style={{
+                    width: "100px",
+                    height: "100px",
+                    marginLeft: "0px",
+                    marginRight: "0px",
+                    marginBottom: "1rem",
+                  }}
+                />
         {loading ? (
           <p style={{ color: "#FDE8E9" }}>Loading...</p>
         ) : !user ? (
@@ -167,41 +137,54 @@ export default function HistoryPage() {
         ) : quizData.length === 0 ? (
           <p style={{ color: "#FDE8E9" }}>No history found.</p>
         ) : (
-          <>
-            <div className="card" style={styles.card}>
-              <div style={styles.cardHeader}>
-                <button
-                  onClick={goToPreviousQuiz}
-                  style={styles.arrowButton}
-                  className="btn btn-light"
+          <div className="accordion w-100" id="quizAccordion">
+            {quizData.map((quiz, index) => (
+              <div className="accordion-item" key={index}>
+                <h2 className="accordion-header" id={`heading-${index}`}>
+                  <button
+                    className="accordion-button collapsed"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target={`#collapse-${index}`}
+                    aria-expanded="false"
+                    aria-controls={`collapse-${index}`}
+                    style={{
+                      backgroundColor: "#615756", // Rose Ebony for the header (background)
+                      color: "#FDE8E9", // Light Pink for text
+                      fontWeight: "bold",
+                    }}
+                  >
+                    {quiz.quizName || `Quiz #${index + 1}`}
+                  </button>
+                </h2>
+                <div
+                  id={`collapse-${index}`}
+                  className="accordion-collapse collapse"
+                  aria-labelledby={`heading-${index}`}
+                  data-bs-parent="#quizAccordion"
+                  style={{
+                    backgroundColor: "#FDE8E9", // Translucent light pink background
+                    color: "#FDE8E9", // Light Pink for text
+                    padding: "1rem", // Add some padding for inner content
+                    borderRadius: "10px", // Rounded corners for the dropdown
+                  }}
                 >
-                  &#8592; {/* Left arrow */}
-                </button>
-                <h4 style={{ flex: 1, textAlign: "center" }}>
-                  {quizData[currentIndex].quizName || `Quiz #${currentIndex + 1}`}
-                </h4>
-                <button
-                  onClick={goToNextQuiz}
-                  style={styles.arrowButton}
-                  className="btn btn-light"
-                >
-                  &#8594; {/* Right arrow */}
-                </button>
-              </div>
-
-              <div className="card-body" style={styles.cardBody}>
-                {quizData[currentIndex].questions && quizData[currentIndex].questions.map((q, i) => (
-                  <div key={i} style={styles.question}>
-                    <p style={styles.questionText}>Q{i + 1}: {q.question}</p>
-                    <p style={styles.answerText}><strong>A:</strong> {q.answer}</p>
-                    {q.explanation && (
-                      <p style={styles.explanationText}><em>{q.explanation}</em></p>
-                    )}
+                  <div className="accordion-body" style={{ color: "#FDE8E9", backgroundColor: "#FDE8E9", borderColor: "#FDE8E9", border: "none"}}>
+                    {quiz.questions && quiz.questions.map((q, i) => (
+                      <div key={i} className="mb-3" style={{ padding: "1rem" }}>
+                        <p className="fw-bold mb-1" style={{ color: "#503D3F" }}>Q{i + 1}: {q.question}</p>
+                        <p className="mb-1" style={{ color: "#503D3F" }}><strong>A:</strong> {q.answer}</p>
+                        {q.explanation && (
+                          <p className="text-muted" style={{ color: "#ADDC92" }}><em>{q.explanation}</em></p>
+                        )}
+                      </div>
+                    ))}
                   </div>
-                ))}
+                </div>
               </div>
-            </div>
-          </>
+            ))}
+          </div>
+
         )}
       </div>
     </div>
